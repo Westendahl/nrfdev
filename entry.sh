@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec /tmp/squashfs-root/app/nrfconnect
+exec /home/developer/squashfs-root/app/nrfconnect
