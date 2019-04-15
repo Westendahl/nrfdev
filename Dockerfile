@@ -33,10 +33,6 @@ RUN apt-get update && \
         libgconf-2-4 \
         libnss3 \
         libasound2 \
-        # Recommended by this rando https://github.com/josschne/ses/blob/master/config_3.50_sdk_15.2.0/Dockerfile \
-        #libx11-6 \
-        #libfreetype6 \
-        #libxrender1 \
         # Reccomended by nRF Connect for SEGGER \
         curl \
         wget \
@@ -79,16 +75,6 @@ USER developer
 ENV HOME /home/developer
 WORKDIR /home/developer
 
-# set up x server for ssh
-#ARG x_display
-#ENV DISPLAY ${x_display}
-#RUN sudo sh -c 'echo "ForwardX11Trusted yes" > /etc/ssh/ssh_config'
-#RUN sudo sh -c 'echo "ForwardX11 yes" > /etc/ssh/ssh_config'
-
-#RUN Xvfb :1 -screen 0 1024x768x16 &
-
-# Setup directories
-
 # Install gcc toolchain
 RUN mkdir -p /opt/gnuarmemb && \
     curl $ARM_TOOLCHAIN -o /tmp/armtools.tar.bz2 && \
@@ -119,10 +105,18 @@ RUN pip3 install --user west && \
     pip3 install --user -r zephyr/scripts/requirements.txt && \
     pip3 install --user -r nrf/scripts/requirements.txt
 
+# Install seggar ide
 RUN mkdir -p /opt/segger && \
     curl https://www.segger.com/downloads/embedded-studio/embeddedstudio_arm_nordic_linux_x64 -o /tmp/segger.tar.gz && \
     tar -xzf /tmp/segger.tar.gz --directory /opt/segger/ && \
     rm /tmp/segger.tar.gz
+
+# Install JTAG drivers
+#RUN cd /opt/Xilinx/SDK/2017.2/data/xicom/cable_drivers/lin64/install_script/install_drivers/ && \
+#    sudo ./install_drivers
+ENV ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb
+ENV GNUARMEMB_TOOLCHAIN_PATH="/gnuarmemb"
+ENV QT_GRAPHICSSYSTEM="native"
 
 # Install extra packages
 #   lin32ncurses5 - to compile lwip
@@ -132,16 +126,14 @@ RUN mkdir -p /opt/segger && \
 #   udev - for JTAG cable drivers
 #   iputils-ping - for SDK connecting to hw server (jtag drivers)
 #RUN sudo apt-get update && sudo apt-get install -qy \
+#    libcanberra-gtk-module
+#    libgtk2.0-0 \
+#    lsb-release \
 #    lib32ncurses5 \
 #    libc6-dev \
-#    libcanberra-gtk-module \
-#    lsb-release \
 #    udev \
-#    iputils-ping
-
-# Install JTAG drivers
-#RUN cd /opt/Xilinx/SDK/2017.2/data/xicom/cable_drivers/lin64/install_script/install_drivers/ && \
-#    sudo ./install_drivers
+#    iputils-ping \
+#    libx11-6 libfreetype6 libxrender1 libfontconfig1 libxext6 python-pip
 
 COPY entry.sh /usr/bin/
 RUN echo "entry.sh" > /home/developer/.bashrc
