@@ -114,9 +114,6 @@ RUN mkdir -p /opt/segger && \
 # Install JTAG drivers
 #RUN cd /opt/Xilinx/SDK/2017.2/data/xicom/cable_drivers/lin64/install_script/install_drivers/ && \
 #    sudo ./install_drivers
-ENV ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb
-ENV GNUARMEMB_TOOLCHAIN_PATH="/gnuarmemb"
-ENV QT_GRAPHICSSYSTEM="native"
 
 # Install extra packages
 #   lin32ncurses5 - to compile lwip
@@ -136,4 +133,4 @@ ENV QT_GRAPHICSSYSTEM="native"
 #    libx11-6 libfreetype6 libxrender1 libfontconfig1 libxext6 python-pip
 
 COPY entry.sh /usr/bin/
-RUN echo "entry.sh" > /home/developer/.bashrc
+ENTRYPOINT ["entry.sh"]
