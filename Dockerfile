@@ -6,6 +6,7 @@ ARG b_gid
 ENV TERM xterm
 
 ENV ARM_TOOLCHAIN https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2
+ENV NRF_CONNECT https://www.nordicsemi.com/-/media/Software-and-other-downloads/Desktop-software/nRF-Connect-for-Desktop/2-6-0/nrfconnect260x8664.AppImage
 
 # turn off recommends on container OS
 # install required dependencies
@@ -82,12 +83,10 @@ RUN mkdir -p /opt/gnuarmemb && \
     rm /tmp/armtools.tar.bz2
 
 # Install nRF Connect
-ADD nrfconnect-2.6.2-x86_64.AppImage /tmp/
-RUN sudo chmod a+x /tmp/nrfconnect-2.6.2-x86_64.AppImage && \
-    sync && \
-    echo "Install nrf connect" && \
-    /tmp/nrfconnect-2.6.2-x86_64.AppImage --appimage-extract && \
-    rm /tmp/nrfconnect-2.6.2-x86_64.AppImage
+RUN curl $NRF_CONNECT -o /tmp/nrfconnectx86_64.AppImage && \
+    sudo chmod a+x /tmp/nrfconnectx86_64.AppImage && \
+    /tmp/nrfconnectx86_64.AppImage --appimage-extract && \
+    rm /tmp/nrfconnectx86_64.AppImage
 
 # Install nRF Connect SDK
 RUN pip3 install --user west && \
